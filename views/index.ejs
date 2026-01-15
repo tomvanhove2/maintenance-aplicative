@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Mini Site Web</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>🛒 Mini Site Web</h1>
+            <div class="nav-links">
+                <a href="/">Accueil</a>
+                <% if (user) { %>
+                    <a href="/products">Produits</a>
+                    <a href="/auth/logout">Déconnexion (<%=user.username%>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Connexion</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="hero">
+            <h2>Bienvenue sur notre site de démonstration</h2>
+            <p>Ce site a été développé avec Node.js, Express et MySQL</p>
+            
+            <% if (user) { %>
+                <p class="welcome">👋 Bonjour <strong><%=user.username%></strong>!</p>
+                <a href="/products" class="btn btn-primary">Voir les produits</a>
+            <% } else { %>
+                <p>Veuillez vous connecter pour accéder aux fonctionnalités</p>
+                <a href="/auth/login" class="btn btn-primary">Se connecter</a>
+            <% } %>
+        </div>
+
+        <div class="features">
+            <h3>Fonctionnalités</h3>
+            <ul>
+                <li>✅ Système d'authentification</li>
+                <li>✅ Gestion de produits (CRUD complet)</li>
+                <li>✅ Interface intuitive</li>
+                <li>⚠️ Site volontairement vulnérable (à des fins pédagogiques)</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Mini Site Web - Projet de démonstration</p>
+    </footer>
+</body>
+</html>

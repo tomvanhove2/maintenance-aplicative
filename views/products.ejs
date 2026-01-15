@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - Mini Site Web</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>🛒 Mini Site Web</h1>
+            <div class="nav-links">
+                <a href="/">Accueil</a>
+                <a href="/products">Produits</a>
+                <a href="/auth/logout">Déconnexion (<%=user.username%>)</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <h2>Liste des produits</h2>
+
+        <!-- Formulaire d'ajout -->
+        <div class="form-card">
+            <h3>➕ Ajouter un produit</h3>
+            <form action="/products/add" method="POST" class="product-form">
+                <div class="form-group">
+                    <label for="name">Nom du produit</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Prix (€)</label>
+                    <input type="number" id="price" name="price" step="0.01" required>
+                </div>
+
+                <button type="submit" class="btn btn-success">Ajouter</button>
+            </form>
+        </div>
+
+        <!-- Liste des produits -->
+        <div class="products-grid">
+            <% if (products.length === 0) { %>
+                <p class="no-products">Aucun produit disponible. Ajoutez-en un!</p>
+            <% } else { %>
+                <% products.forEach(product => { %>
+                    <div class="product-card">
+                        <h3><%=product.name%></h3>
+                        <p class="product-description"><%=product.description%></p>
+                        <p class="product-price"><%=product.price%> €</p>
+                        
+                        <!-- Formulaire de modification -->
+                        <details>
+                            <summary class="btn btn-warning btn-sm">Modifier</summary>
+                            <form action="/products/update/<%=product.id%>" method="POST" class="edit-form">
+                                <input type="text" name="name" value="<%=product.name%>" required>
+                                <textarea name="description" required><%=product.description%></textarea>
+                                <input type="number" name="price" value="<%=product.price%>" step="0.01" required>
+                                <button type="submit" class="btn btn-warning btn-sm">Enregistrer</button>
+                            </form>
+                        </details>
+                        
+                        <!-- Formulaire de suppression -->
+                        <form action="/products/delete/<%=product.id%>" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce produit?')">Supprimer</button>
+                        </form>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Mini Site Web - Projet de démonstration</p>
+    </footer>
+</body>
+</html>

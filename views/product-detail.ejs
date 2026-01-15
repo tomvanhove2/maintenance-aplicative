@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=product.name%> - Mini Site Web</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>🛒 Mini Site Web</h1>
+            <div class="nav-links">
+                <a href="/">Accueil</a>
+                <a href="/products">Produits</a>
+                <a href="/auth/logout">Déconnexion (<%=user.username%>)</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <a href="/products" class="btn btn-secondary">← Retour aux produits</a>
+        
+        <div class="product-detail">
+            <h2><%=product.name%></h2>
+            <div class="detail-info">
+                <p><strong>Description:</strong></p>
+                <p><%=product.description%></p>
+                <p class="price-large"><%=product.price%> €</p>
+                <p class="product-id">ID: <%=product.id%></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Mini Site Web - Projet de démonstration</p>
+    </footer>
+</body>
+</html>
