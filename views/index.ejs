@@ -32,7 +32,10 @@
                 <a href="/products" class="btn btn-primary">Voir les produits</a>
             <% } else { %>
                 <p>Veuillez vous connecter pour accéder aux fonctionnalités</p>
-                <a href="/auth/login" class="btn btn-primary">Se connecter</a>
+                <div class="hero-buttons">
+                    <a href="/auth/login" class="btn btn-primary">Se connecter</a>
+                    <a href="/auth/register" class="btn btn-secondary">Créer un compte</a>
+                </div>
             <% } %>
         </div>
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un compte - Mini Site Web</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>🛒 Mini Site Web</h1>
+            <div class="nav-links">
+                <a href="/">Accueil</a>
+                <a href="/auth/login">Connexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="login-container">
+            <h2>Créer un compte</h2>
+            
+            <% if (error) { %>
+                <div class="alert alert-error"><%=error%></div>
+            <% } %>
+
+            <% if (success) { %>
+                <div class="alert alert-success"><%=success%></div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="/auth/login" class="btn btn-primary">Se connecter</a>
+                </div>
+            <% } %>
+
+            <% if (!success) { %>
+                <form action="/auth/register" method="POST" class="login-form">
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur *</label>
+                        <input type="text" id="username" name="username" required minlength="3">
+                        <small>Au moins 3 caractères</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="exemple@email.com">
+                        <small>Optionnel</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mot de passe *</label>
+                        <input type="password" id="password" name="password" required minlength="6">
+                        <small>Au moins 6 caractères</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Créer mon compte</button>
+                </form>
+
+                <div class="hint-box">
+                    <h4>⚠️ Avertissement de sécurité</h4>
+                    <p>Ce formulaire contient des failles de sécurité volontaires :</p>
+                    <ul>
+                        <li>Mots de passe stockés en clair (pas de hash)</li>
+                        <li>Injection SQL possible</li>
+                        <li>Validation minimale des données</li>
+                    </ul>
+                    <p class="warning">💡 Testez l'injection SQL en utilisant des caractères spéciaux !</p>
+                </div>
+
+                <div class="register-link">
+                    <p>Vous avez déjà un compte ? <a href="/auth/login">Se connecter</a></p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Mini Site Web - Projet de démonstration</p>
+    </footer>
+</body>
+</html>

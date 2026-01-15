@@ -8,6 +8,50 @@ const router = express.Router();
 const db = require('../config/database');
 
 /**
+ * GET /auth/register - Affiche le formulaire d'inscription
+ */
+router.get('/register', (req, res) => {
+    res.render('register', { error: null, success: null });
+});
+
+/**
+ * POST /auth/register - Traite l'inscription
+ * FAILLE DE SÉCURITÉ #6: Pas de validation des données, injection SQL possible
+ */
+router.post('/register', (req, res) => {
+    const { username, password, email } = req.body;
+    
+    // DANGER: Pas de validation des données
+    // DANGER: Mot de passe stocké en clair (pas de hash)
+    // DANGER: Injection SQL possible avec la concaténation
+    const query = `INSERT INTO users (username, password, email) VALUES ('${username}', '${password}', '${email}')`;
+    
+    console.log('Requête SQL:', query); // Log pour démonstration
+    
+    db.query(query, (err) => {
+        if (err) {
+            console.error('Erreur SQL:', err);
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.render('register', { 
+                    error: 'Ce nom d\'utilisateur existe déjà', 
+                    success: null 
+                });
+            }
+            return res.render('register', { 
+                error: 'Erreur lors de la création du compte', 
+                success: null 
+            });
+        }
+        
+        // Compte créé avec succès
+        res.render('register', { 
+            error: null, 
+            success: 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.' 
+        });
+    });
+});
+
+/**
  * GET /auth/login - Affiche le formulaire de connexion
  */
 router.get('/login', (req, res) => {
