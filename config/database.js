@@ -1,27 +1,27 @@
 /**
- * Configuration de la connexion à la base de données MySQL
- * ATTENTION: Ce fichier contient des informations sensibles en dur (mauvaise pratique volontaire)
+ * MySQL database connection configuration
  */
 
 const mysql = require('mysql2');
+require('dotenv').config();
 
-// FAILLE DE SÉCURITÉ #1: Identifiants en dur dans le code
+// Using environment variables for credentials
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',        // Utilisateur root - mauvaise pratique!
-    password: 'Tomdu59173',        // Mot de passe en dur - très dangereux!
-    database: 'mini_site_db'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'mini_site_db'
 });
 
 /**
- * Établit la connexion à la base de données
+ * Establish database connection
  */
 connection.connect((err) => {
     if (err) {
-        console.error('Erreur de connexion à la base de données:', err);
+        console.error('Database connection error:', err);
         return;
     }
-    console.log('Connecté à la base de données MySQL');
+    console.log('Connected to MySQL database');
 });
 
 module.exports = connection;

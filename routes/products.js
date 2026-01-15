@@ -1,6 +1,6 @@
 /**
- * Routes pour la gestion des produits (CRUD)
- * ATTENTION: Contient un bug volontaire dans la fonction de mise à jour
+ * Product management routes (CRUD)
+ * WARNING: Contains an intentional bug in the update function
  */
 
 const express = require('express');
@@ -8,7 +8,7 @@ const router = express.Router();
 const db = require('../config/database');
 
 /**
- * Middleware pour vérifier si l'utilisateur est connecté
+ * Middleware to check if user is logged in
  */
 function requireAuth(req, res, next) {
     if (!req.session.user) {
@@ -18,13 +18,13 @@ function requireAuth(req, res, next) {
 }
 
 /**
- * GET /products - Affiche la liste des produits
+ * GET /products - Display product list
  */
 router.get('/', requireAuth, (req, res) => {
     db.query('SELECT * FROM products ORDER BY id DESC', (err, results) => {
         if (err) {
-            console.error('Erreur:', err);
-            return res.status(500).send('Erreur serveur');
+            console.error('Error:', err);
+            return res.status(500).send('Server error');
         }
         res.render('products', { 
             products: results,
@@ -34,75 +34,95 @@ router.get('/', requireAuth, (req, res) => {
 });
 
 /**
- * POST /products/add - Ajoute un nouveau produit
+ * POST /products/add - Add a new product
  */
 router.post('/add', requireAuth, (req, res) => {
     const { name, description, price } = req.body;
     
-    // FAILLE DE SÉCURITÉ #4: Pas de validation des données
+    // Data validation
+    if (!name || name.trim().length === 0) {
+        return res.status(400).send('Product name is required');
+    }
+    if (!description || description.trim().length === 0) {
+        return res.status(400).send('Description is required');
+    }
+    if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
+        return res.status(400).send('Price must be a positive number');
+    }
+    
     const query = 'INSERT INTO products (name, description, price) VALUES (?, ?, ?)';
     
-    db.query(query, [name, description, price], (err) => {
+    db.query(query, [name.trim(), description.trim(), parseFloat(price)], (err) => {
         if (err) {
-            console.error('Erreur:', err);
-            return res.status(500).send('Erreur lors de l\'ajout');
+            console.error('Error:', err);
+            return res.status(500).send('Error adding product');
         }
         res.redirect('/products');
     });
 });
 
 /**
- * POST /products/update/:id - Met à jour un produit
- * BUG VOLONTAIRE: Le prix n'est pas correctement converti en nombre
+ * POST /products/update/:id - Update a product
+ * INTENTIONAL BUG: Price is not properly converted to a number
  */
 router.post('/update/:id', requireAuth, (req, res) => {
     const { id } = req.params;
     const { name, description, price } = req.body;
     
-    // BUG: Le prix devrait être converti en nombre, mais il reste une chaîne
-    // Cela peut causer des problèmes de calcul plus tard
+    // Data validation
+    if (!name || name.trim().length === 0) {
+        return res.status(400).send('Product name is required');
+    }
+    if (!description || description.trim().length === 0) {
+        return res.status(400).send('Description is required');
+    }
+    if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
+        return res.status(400).send('Price must be a positive number');
+    }
+    
+    // BUG: Price should be converted to a number, but it remains a string
+    // This can cause calculation problems later
     const query = 'UPDATE products SET name = ?, description = ?, price = ? WHERE id = ?';
     
-    db.query(query, [name, description, price, id], (err) => {
+    db.query(query, [name.trim(), description.trim(), price, id], (err) => {
         if (err) {
-            console.error('Erreur:', err);
-            return res.status(500).send('Erreur lors de la mise à jour');
+            console.error('Error:', err);
+            return res.status(500).send('Error updating product');
         }
         res.redirect('/products');
     });
 });
 
 /**
- * POST /products/delete/:id - Supprime un produit
+ * POST /products/delete/:id - Delete a product
  */
 router.post('/delete/:id', requireAuth, (req, res) => {
     const { id } = req.params;
     
-    // FAILLE DE SÉCURITÉ #5: Pas de vérification des permissions
-    // N'importe quel utilisateur connecté peut supprimer n'importe quel produit
+    // All logged-in users can delete products (intended behavior)
     db.query('DELETE FROM products WHERE id = ?', [id], (err) => {
         if (err) {
-            console.error('Erreur:', err);
-            return res.status(500).send('Erreur lors de la suppression');
+            console.error('Error:', err);
+            return res.status(500).send('Error deleting product');
         }
         res.redirect('/products');
     });
 });
 
 /**
- * GET /products/:id - Affiche les détails d'un produit
+ * GET /products/:id - Display product details
  */
 router.get('/:id', requireAuth, (req, res) => {
     const { id } = req.params;
     
     db.query('SELECT * FROM products WHERE id = ?', [id], (err, results) => {
         if (err) {
-            console.error('Erreur:', err);
-            return res.status(500).send('Erreur serveur');
+            console.error('Error:', err);
+            return res.status(500).send('Server error');
         }
         
         if (results.length === 0) {
-            return res.status(404).send('Produit non trouvé');
+            return res.status(404).send('Product not found');
         }
         
         res.render('product-detail', { 

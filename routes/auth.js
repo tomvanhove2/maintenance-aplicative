@@ -1,94 +1,115 @@
 /**
- * Routes d'authentification
- * ATTENTION: Contient des failles de sécurité SQL Injection volontaires
+ * Authentication routes
+ * WARNING: Contains intentional SQL Injection vulnerabilities
  */
 
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const bcrypt = require('bcrypt');
 
 /**
- * GET /auth/register - Affiche le formulaire d'inscription
+ * GET /auth/register - Display registration form
  */
 router.get('/register', (req, res) => {
     res.render('register', { error: null, success: null });
 });
 
 /**
- * POST /auth/register - Traite l'inscription
- * FAILLE DE SÉCURITÉ #6: Pas de validation des données, injection SQL possible
+ * POST /auth/register - Process registration
  */
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
     const { username, password, email } = req.body;
     
-    // DANGER: Pas de validation des données
-    // DANGER: Mot de passe stocké en clair (pas de hash)
-    // DANGER: Injection SQL possible avec la concaténation
-    const query = `INSERT INTO users (username, password, email) VALUES ('${username}', '${password}', '${email}')`;
+    // Data validation
+    if (!username || username.trim().length < 3) {
+        return res.render('register', { 
+            error: 'Username must contain at least 3 characters', 
+            success: null 
+        });
+    }
+    if (!password || password.length < 6) {
+        return res.render('register', { 
+            error: 'Password must contain at least 6 characters', 
+            success: null 
+        });
+    }
     
-    console.log('Requête SQL:', query); // Log pour démonstration
-    
-    db.query(query, (err) => {
-        if (err) {
-            console.error('Erreur SQL:', err);
-            if (err.code === 'ER_DUP_ENTRY') {
+    try {
+        // Hash password with bcrypt
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // Use prepared statement to avoid SQL injection
+        const query = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
+        
+        db.query(query, [username, hashedPassword, email || null], (err) => {
+            if (err) {
+                console.error('SQL Error:', err);
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.render('register', { 
+                        error: 'This username already exists', 
+                        success: null 
+                    });
+                }
                 return res.render('register', { 
-                    error: 'Ce nom d\'utilisateur existe déjà', 
+                    error: 'Error creating account', 
                     success: null 
                 });
             }
-            return res.render('register', { 
-                error: 'Erreur lors de la création du compte', 
-                success: null 
+            
+            // Account created successfully
+            res.render('register', { 
+                error: null, 
+                success: 'Account created successfully! You can now log in.' 
             });
-        }
-        
-        // Compte créé avec succès
-        res.render('register', { 
-            error: null, 
-            success: 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.' 
         });
-    });
+    } catch (error) {
+        console.error('Hashing error:', error);
+        res.render('register', { 
+            error: 'Error creating account', 
+            success: null 
+        });
+    }
 });
 
 /**
- * GET /auth/login - Affiche le formulaire de connexion
+ * GET /auth/login - Display login form
  */
 router.get('/login', (req, res) => {
     res.render('login', { error: null });
 });
 
 /**
- * POST /auth/login - Traite la connexion
- * FAILLE DE SÉCURITÉ #3: Injection SQL possible!
+ * POST /auth/login - Process login
+ * SECURITY VULNERABILITY #3: SQL Injection possible!
  */
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
     
-    // DANGER: Requête SQL vulnérable à l'injection SQL
-    // Un attaquant peut utiliser: ' OR '1'='1
+    // DANGER: SQL query vulnerable to SQL injection
+    // An attacker can use: ' OR '1'='1
     const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
     
-    console.log('Requête SQL:', query); // Log pour démonstration
+    console.log('SQL Query:', query); // Log for demonstration
     
     db.query(query, (err, results) => {
         if (err) {
-            console.error('Erreur SQL:', err);
-            return res.render('login', { error: 'Erreur de connexion' });
+            console.error('SQL Error:', err);
+            return res.render('login', { error: 'Connection error' });
         }
         
         if (results.length > 0) {
-            // Connexion réussie
+            // Successful login
             req.session.user = results[0];
             res.redirect('/products');
         } else {
-            res.render('login', { error: 'Identifiants incorrects' });
+            res.render('login', { error: 'Incorrect credentials' });
         }
     });
 });
 
 /**
- * GET /auth/logout - Déconnexion
+ * GET /auth/logout - Logout
  */
 router.get('/logout', (req, res) => {
     req.session.destroy();

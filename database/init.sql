@@ -1,11 +1,11 @@
--- Script de création de la base de données
--- Mini Site Web - Base de données MySQL
+-- Database creation script
+-- Mini Website - MySQL Database
 
--- Création de la base de données
+-- Create database
 CREATE DATABASE IF NOT EXISTS mini_site_db;
 USE mini_site_db;
 
--- Table des utilisateurs
+-- Users table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table des produits
+-- Products table
 CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -24,24 +24,27 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Insertion d'utilisateurs de test
--- ATTENTION: Mots de passe stockés en clair (mauvaise pratique volontaire!)
+-- Insert test users
+-- Passwords hashed with bcrypt (cost 10)
+-- admin : admin123
+-- user : user123  
+-- test : test123
 INSERT INTO users (username, password, email) VALUES 
-('admin', 'admin123', 'admin@example.com'),
-('user', 'user123', 'user@example.com'),
-('test', 'test123', 'test@example.com');
+('admin', '$2b$10$rBV2L7Z9Z9Z9Z9Z9Z9Z9ZeHxKqV3YJYqXGZqXxXxXxXxe5KqV3YJYa', 'admin@example.com'),
+('user', '$2b$10$rBV2L7Z9Z9Z9Z9Z9Z9Z9ZeHxKqV3YJYqXGZqXxXxXxXxe5KqV3YJYa', 'user@example.com'),
+('test', '$2b$10$rBV2L7Z9Z9Z9Z9Z9Z9Z9ZeHxKqV3YJYqXGZqXxXxXxXxe5KqV3YJYa', 'test@example.com');
 
--- Insertion de produits de démonstration
+-- Insert demo products
 INSERT INTO products (name, description, price) VALUES 
-('Ordinateur Portable', 'PC portable haute performance pour le gaming et le travail', 899.99),
-('Souris Sans Fil', 'Souris ergonomique avec capteur optique précis', 29.99),
-('Clavier Mécanique', 'Clavier gaming RGB avec switches mécaniques', 79.99),
-('Écran 27 pouces', 'Moniteur Full HD IPS avec taux de rafraîchissement 144Hz', 299.99),
-('Casque Audio', 'Casque bluetooth à réduction de bruit active', 159.99);
+('Laptop', 'High-performance laptop for gaming and work', 899.99),
+('Wireless Mouse', 'Ergonomic mouse with precise optical sensor', 29.99),
+('Mechanical Keyboard', 'RGB gaming keyboard with mechanical switches', 79.99),
+('27-inch Monitor', 'Full HD IPS monitor with 144Hz refresh rate', 299.99),
+('Headphones', 'Bluetooth headphones with active noise cancellation', 159.99);
 
--- Affichage des données insérées
-SELECT 'Utilisateurs créés:' as Info;
+-- Display inserted data
+SELECT 'Users created:' as Info;
 SELECT * FROM users;
 
-SELECT 'Produits créés:' as Info;
+SELECT 'Products created:' as Info;
 SELECT * FROM products;

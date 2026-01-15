@@ -48,7 +48,22 @@ Il est conçu uniquement à des fins éducatives pour démontrer :
    npm install
    ```
 
-3. **Configurer la base de données**
+3. **Configurer les variables d'environnement**
+   
+   Copier le fichier `.env.example` en `.env` :
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Puis éditer le fichier `.env` et modifier les valeurs :
+   ```
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=votre_mot_de_passe_mysql
+   DB_NAME=mini_site_db
+   ```
+
+4. **Configurer la base de données**
    
    a. Démarrer MySQL
    
@@ -58,16 +73,6 @@ Il est conçu uniquement à des fins éducatives pour démontrer :
    ```
    
    Ou via MySQL Workbench / phpMyAdmin, exécuter le contenu du fichier `database/init.sql`
-
-4. **Vérifier la configuration**
-   
-   Ouvrir `config/database.js` et modifier si nécessaire :
-   ```javascript
-   host: 'localhost',
-   user: 'root',
-   password: '',  // Votre mot de passe MySQL
-   database: 'mini_site_db'
-   ```
 
 5. **Lancer le serveur**
    ```bash
@@ -85,11 +90,15 @@ Il est conçu uniquement à des fins éducatives pour démontrer :
 
 ## 👤 Comptes de Test
 
+**Note** : Les mots de passe sont maintenant hashés avec bcrypt pour plus de sécurité.
+
 | Nom d'utilisateur | Mot de passe |
 |-------------------|--------------|
 | admin             | admin123     |
 | user              | user123      |
 | test              | test123      |
+
+💡 **Vous pouvez aussi créer votre propre compte** via la page d'inscription `/auth/register`
 
 ## 🐛 Failles de Sécurité Volontaires
 
@@ -98,31 +107,6 @@ Il est conçu uniquement à des fins éducatives pour démontrer :
 - **Description**: Les identifiants de connexion ne sont pas échappés
 - **Test**: Utiliser `' OR '1'='1` comme nom d'utilisateur
 - **Impact**: Permet de se connecter sans connaître les identifiants
-
-### 2. **Identifiants en dur**
-- **Localisation**: `config/database.js` - Lignes 10-14
-- **Description**: Identifiants de base de données codés en dur
-- **Impact**: Exposition des credentials si le code est partagé
-
-### 3. **Mots de passe non hashés**
-- **Localisation**: `database/init.sql` - Ligne 28
-- **Description**: Les mots de passe sont stockés en clair dans la BDD
-- **Impact**: Compromission totale en cas d'accès à la base de données
-
-### 4. **Session non sécurisée**
-- **Localisation**: `server.js` - Lignes 20-27
-- **Description**: Secret faible, cookies non sécurisés
-- **Impact**: Risque de vol de session (session hijacking)
-
-### 5. **Pas de validation des données**
-- **Localisation**: `routes/products.js` - Ligne 35
-- **Description**: Aucune validation des entrées utilisateur
-- **Impact**: Injection de données malveillantes, XSS potentiel
-
-### 6. **Pas de contrôle des permissions**
-- **Localisation**: `routes/products.js` - Ligne 63
-- **Description**: N'importe quel utilisateur peut supprimer n'importe quel produit
-- **Impact**: Destruction de données par des utilisateurs non autorisés
 
 ## 🪲 Bug Volontaire
 

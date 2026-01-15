@@ -1,6 +1,6 @@
 /**
- * Serveur Express principal
- * Mini site web avec vulnérabilités volontaires pour démonstration
+ * Main Express Server
+ * Mini website with intentional vulnerabilities for demonstration
  */
 
 const express = require('express');
@@ -11,7 +11,7 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// Configuration du moteur de templates
+// Template engine configuration
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -20,29 +20,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// FAILLE DE SÉCURITÉ #2: Configuration de session non sécurisée
+// Secure session configuration
 app.use(session({
-    secret: 'secret123',  // Secret faible et en dur
+    secret: 'un-secret-tres-long-et-complexe-pour-la-production-2026',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { 
-        secure: false,    // Pas de HTTPS requis
-        httpOnly: false   // Cookie accessible par JavaScript
+        secure: false,    // In production, set to true with HTTPS
+        httpOnly: true,   // Cookie not accessible via JavaScript (XSS protection)
+        maxAge: 1000 * 60 * 60 * 24 // 24 hours
     }
 }));
 
-// Import des routes
+// Import routes
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const homeRoutes = require('./routes/home');
 
-// Utilisation des routes
+// Use routes
 app.use('/', homeRoutes);
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 
-// Démarrage du serveur
+// Start server
 app.listen(PORT, () => {
-    console.log(`Serveur démarré sur http://localhost:${PORT}`);
-    console.log('⚠️  ATTENTION: Ce site contient des failles de sécurité volontaires!');
+    console.log(`Server started on http://localhost:${PORT}`);
+    console.log('⚠️  WARNING: This site contains intentional security vulnerabilities!');
 });

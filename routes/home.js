@@ -1,13 +1,13 @@
 /**
- * Routes pour la page d'accueil
+ * Home page routes
  */
 
 const express = require('express');
 const router = express.Router();
 
 /**
- * GET / - Page d'accueil
- * Affiche la page d'accueil avec le statut de connexion
+ * GET / - Home page
+ * Displays the home page with login status
  */
 router.get('/', (req, res) => {
     res.render('index', { 
