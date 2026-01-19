@@ -1,3 +1,8 @@
+ALEXANDRE DAMMAN 
+TOM VANHOVE 
+
+GROUPE 14
+
 # 🛒 Mini Site Web - Node.js/Express/MySQL
 
 Site web de gestion de produits développé avec Node.js, Express et MySQL.
